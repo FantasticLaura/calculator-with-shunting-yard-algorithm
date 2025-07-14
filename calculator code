@@ -1,0 +1,66 @@
+class Token:
+    def __init__(self, char, num, is_number):
+        self.char = char
+        self.num = num
+        self.is_number = is_number
+    
+    def __repr__(self):
+        return f"({self.char} {self.num} {self.is_number})"
+
+s="1+3-5"
+s=input("Please, enter the operation: ")
+
+precedence = {'+': 1, '-': 1, '*': 2, '/': 2, '^': 3}
+tokens = []
+
+#turn string into tokens
+for x in s:
+    if x.isdigit():
+        tokens.append(Token("", int(x), True))
+    elif x in ["+", "/", "*", "-", "(", ")", "^"]: #would normally use sets for this
+        tokens.append(Token(x, "", False))
+
+print(tokens)
+output=[]
+operator=[]
+#shunting yard
+for y in tokens:
+    if y.is_number:
+        output.append(y.num)
+    elif y.char in precedence:
+        #operator.append(y.char)
+        while operator and operator[-1] != "(" and precedence[operator[-1]] > precedence[y.char]:
+            output.append(operator.pop())
+        operator.append(y.char)
+    elif y.char == "(":
+        operator.append(y.char)
+    elif y.char == ")":
+        while operator and operator[-1] != "(":
+            output.append(operator.pop())
+        operator.pop()
+while operator != []:
+    if operator[-1]!="(":
+        output.append(operator.pop())
+
+result = []
+for z in output:
+    if isinstance(z, int): #checks if z is an int
+        result.append(z)
+    else:
+        b = result.pop()
+        a = result.pop()
+        match z:
+            case "+":
+                result.append(a+b)
+            case "*":
+                result.append(a*b)
+            case "/":
+                result.append(a/b)
+            case "-":
+                result.append(a-b)
+            case "^":
+                result.append(a**b)
+            
+print(output)
+print(operator)
+print(result)
